@@ -43,6 +43,7 @@ class Login extends CI_Controller {
 					// Menyimpan data di session
 					$data = array(
 						'nama_user' => $user['nama_user'],
+						'id_user' => $user['id_user'],
 						'username' => $user['username'],
 						'id_role' => $user['id_role']
 					);

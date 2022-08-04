@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>TU &mdash; Smanidy</title>
+  <title><?= $title;?></title>
 
   <!-- General CSS Files -->  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
@@ -32,12 +32,12 @@
         </form>
         <ul class="navbar-nav navbar-right">
           <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-            <img alt="image" src="<?php echo base_url('assets/admin/assets/img/avatar/avatar-1.png');?>" class="rounded-circle mr-1">
+            <img alt="image" src="<?php echo base_url('foto_profil/').$user['foto'];?>" class="rounded-circle mr-1">
             <div class="d-sm-none d-lg-inline-block">Hi, <?= $user['nama_user']; ?></div></a>
             <div class="dropdown-menu dropdown-menu-right">
               
-              <a href="features-profile.html" class="dropdown-item has-icon">
-                <i class="far fa-user"></i> Profile
+              <a href="<?php echo site_url ('profil/')?> " class="dropdown-item has-icon">
+                <i class="far fa-user"></i> Profil
               </a>
               
               <div class="dropdown-divider"></div>
@@ -56,28 +56,67 @@
           <div class="sidebar-brand sidebar-brand-sm">
             <p href="index.html"><b>TU Smanidy </b></p>
           </div>
+
           <ul class="sidebar-menu">
-              <li class="<?php echo $this->uri->segment(2) == 'dashboard' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('adminpanel/dashboard');?>" ><i class="fas fa-fire"></i> <span>Dashboard</span></a></li>
-              <li class="<?php echo $this->uri->segment(1) == 'kategori' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('kategori');?>"><i class="fas fa-th"></i> <span>Kategori</span></a></li>
-              <li class="nav-item dropdown <?php echo $this->uri->segment(1) == 'kota' || $this->uri->segment(1) == 'kurir' || $this->uri->segment(1) == 'ongkir' ? 'active' : ''; ?>">
-                <a href="#" class="nav-link has-dropdown"><i class="fa fa-plane"></i><span>Jasa Pengiriman</span></a>
-                <ul class="dropdown-menu">
-                  <li class="<?php echo $this->uri->segment(1) == 'kota' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('kota');?>"><i class="fa fa-city"></i></i> <span>Kota</span></a></li>
-                  <li class="<?php echo $this->uri->segment(1) == 'kurir' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('kurir');?>"><i class="fa fa-truck"></i><span>Kurir</span></a></li>
-                  <li class="<?php echo $this->uri->segment(1) == 'ongkir' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('ongkir');?>"><i class="fa fa-money-check"></i><span>Ongkos Kirim</span></a></li>
-                </ul>
-              </li>
-              <li class="<?php echo $this->uri->segment(1) == 'member' ? 'active' : ''; ?>"><a class="nav-link" href="<?php echo site_url('member');?>" ><i class="fa fa-user"></i><span>Member</span></a></li>
-              <li class="<?php echo $this->uri->segment(1) == 'toko' ? 'active' : ''; ?>"><a class="nav-link" href="#"><i class="fas fa-store"></i> <span>Toko</span></a></li>
-              
+           <!-- QUERY MENU -->
+           <?php
+                        $id_role = $this->session->userdata('id_role');
+                        $queryMenu = "SELECT `user_menu`.`id_menu`,`menu`
+                                        FROM `user_menu` JOIN `user_access_menu`
+                                        ON `user_menu`.`id_menu` = `user_access_menu`.`id_menu`
+                                    WHERE `user_access_menu`.`id_role` = $id_role
+                                    ORDER BY `user_access_menu`.`id_menu` ASC
+                                    ";
+
+                        $menu = $this->db->query($queryMenu)->result_array();
+                        // var_dump($menu);
+                        // die;
+                        ?>
+
+                      <!-- LOOPING MENU -->
+
+                      <?php foreach ($menu as $m) : ?>
+
+                          <li class="menu-header"><?= $m['menu']; ?></li>
+                          <!-- SIAPKAN SUB MENU SESUAI MENU -->
+                          <!-- JOIN TABLE MENU DAN SUB MENU -->
+                          <?php
+                            $menuId = $m['id_menu'];
+                            $querySubMenu = "SELECT * FROM `user_sub_menu` JOIN `user_menu`
+                            ON `user_sub_menu`.`id_menu` = `user_menu`.`id_menu`
+                            WHERE `user_sub_menu`.`id_menu` = $menuId
+                            AND `user_sub_menu`.`is_active` = 1";
+
+                            $subMenu = $this->db->query($querySubMenu)->result_array(); ?>
+                            <?php foreach ($subMenu as $sm) : ?>
+                              <?php if ($title == $sm['title']) : ?>
+                                  <li class=" ">
+                                  <?php else : ?>
+                                  <li class="nav-item">
+                                  <?php endif; ?>
+                                  <a href="<?= base_url($sm['url']); ?>" class="nav-link">
+                                      <i class="<?= $sm['icon']; ?>"></i>
+                                      <span><?= $sm['title']; ?></span>
+                                  </a>
+                                  </li>
+                                  </li>
+                              <?php endforeach; ?>
+                              <!-- SEBETULNYA TIDAK PERLU MENGGUNAKAN JOIN  -->
+                              <!-- SELECT * FROM `user_sub_menu` WHERE `id_menu` = $menuId AND `status` = 1" -->
+
+                          <?php endforeach; ?>
+                          <br>
+              <li class="active"><a class="nav-link"  onclick="logoutConfirm('<?php echo site_url('login/logout');?>')"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+          </ul>
         </aside>
       </div>
 
       <!-- Main Content -->
       <?= $contents ?> 
+
       <footer class="main-footer">
         <div class="footer-left">
-          Copyright &copy; 2018 <div class="bullet"></div> Design By <a href="https://nauval.in/">Shinta Asma'in</a>
+          Copyright &copy; 2022 <div class="bullet"></div> Shinta Asma'in
         </div>
         <div class="footer-right">
           2.3.0
@@ -107,7 +146,13 @@
 
   <!-- Page Specific JS File -->
   <script src="<?php echo base_url('assets/admin/assets/js/page/index.js');?>"></script>
-
+  <!-- Upload Foto -->
+  <script>
+      $('.custom-file-input').on('change', function() {
+          let fileName = $(this).val().split('\\').pop();
+          $(this).next('.custom-file-label').addClass("selected").html(fileName);
+      });
+  </script>
   <script>
   function logoutConfirm(url){
     $('#btn-logout').attr('href', url);

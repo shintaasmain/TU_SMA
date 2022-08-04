@@ -1,0 +1,27 @@
+body {
+	
+	background-image: url("../foto_Sampul/sampul.jpg");
+	height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.nama
+	{
+		position: relative;
+		left: 320px;
+		top: 794px;
+	}
+.jenis
+	{
+		position: relative;
+		left: 320px;
+		top: 772px;
+	}
+.jabatan
+	{
+		position: relative;
+		left: 320px;
+		top: 750px;
+	}
