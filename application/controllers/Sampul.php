@@ -13,6 +13,9 @@ class Sampul extends CI_Controller {
 	// Menampilkan view sampul
 	public function index()
 	{
+		if(empty($this->session->userdata('username'))){
+			redirect('login');
+		}
 		$data['title'] = "Download Sampul";
         $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('nama_user')])-> row_array();
         $data['profil'] = $this->MProfil->getdataprofil($this->session->userdata('id_user'))->result();
@@ -23,6 +26,9 @@ class Sampul extends CI_Controller {
 	// Digunakan untuk export PDF
 	public function pdf()
     {
+		if(empty($this->session->userdata('username'))){
+			redirect('login');
+		}
 		$data['title'] = "Sampul";
         $this->load->library('dompdf_gen');
         $data['profil'] = $this->MProfil->getdataprofil($this->session->userdata('id_user'))->result();;

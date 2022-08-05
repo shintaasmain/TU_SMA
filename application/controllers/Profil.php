@@ -13,6 +13,9 @@ class Profil extends CI_Controller {
 	// TAMPIL HALAMAN PROFIL
 	public function index()
 	{
+        if(empty($this->session->userdata('username'))){
+			redirect('login');
+		}
 		$data['title'] = "Profilku";
         $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('nama_user')])-> row_array();
 		$data['profil'] = $this->MProfil->getdataprofil($this->session->userdata('id_user'))->result();
@@ -22,6 +25,9 @@ class Profil extends CI_Controller {
 	// UBAH PROFIL
     public function ubahProfil()
     {
+        if(empty($this->session->userdata('username'))){
+			redirect('login');
+		}
         $data['title'] = 'Ubah Profil';
         $data['user'] = $this->db->get_where('user', ['username' =>
         $this->session->userdata('username')])->row_array();
@@ -100,7 +106,9 @@ class Profil extends CI_Controller {
 	// UBAH PASSWORD
     public function ubahPassword()
     {
-
+        if(empty($this->session->userdata('username'))){
+			redirect('login');
+		}
         $data['title'] = 'Ubah Password';
         $data['user'] = $this->db->get_where('user', ['username' =>
         $this->session->userdata('username')])->row_array();
